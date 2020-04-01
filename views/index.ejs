@@ -7,7 +7,20 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Hello Sir.</title>
+        <script src="../../socket.io/socket.io.js"></script>
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+        form { background: #fff; padding: 3px; position: fixed; bottom: 0; width: 100%; border-color: #000; border-top-style: solid; border-top-width: 1px;}
+        form input { border-style: solid; border-width: 1px; padding: 10px; width: 85%; margin-right: .5%; }
+        form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; margin-left: 2%; }
+            #messages { list-style-type: none; margin: 0; padding: 0; }
+            #messages li { padding: 5px 10px; }
+            #messages li:nth-child(odd) { background: #eee; }
+        </style>
+
     </head>
+
 
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -18,13 +31,13 @@
             <div class="collapse navbar-collapse" id="navbarText">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                  <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                  <a class="nav-link" href="https://truemessage.app">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item active">
                   <a class="nav-link" href="#">Chat</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Pricing</a>
+                  <a class="nav-link" href="#">Hosting</a>
                 </li>
               </ul>
               <span class="navbar-text">
@@ -33,30 +46,71 @@
             </div>
           </nav>
 
-
-            <div class="border rounded p-3 m-3 w-25">
+        <div class="container-fluid">
+            <div class="d-flex flex-row bd-highlight mb-2">
+            <div class="w-25 p-1">
                 <h1>Chats:</h1>
-                <div class="w-auto border rounded shadow p-3 m-3">
+                <div class="w-75 border rounded shadow-sm p-3 m-3">
                     <h4>Mehdi Hussain</h4>
                     <p>Hello There!...</p>
                 </div>
-                <div class="w-auto border rounded shadow p-3 m-3">
+                <div class="w-75 border rounded shadow-sm p-3 m-3">
                     <h4>Nihal Abbu</h4>
                     <p>Hi!...</p>
                 </div>
-                <div class="w-auto border rounded shadow p-3 m-3">
+                <div class="w-75 border rounded shadow-sm p-3 m-3">
                     <h4>John Doe</h4>
                     <p>Hello There!...</p>
                 </div>
-                <div class="w-auto border rounded shadow p-3 m-3">
+                <div class="w-75 border rounded shadow-sm p-3 m-3">
                     <h4>Server Admin</h4>
                     <p>Hello There!...</p>
                 </div>
             </div>
 
+            <div class="border rounded w-75 p-3"> 
+                
+                    <h1>Mehdi Hussain</h1>
+                    <p>Status: Online</p>
+                    <div class="w-75">
+                    <div>
+                        <ul id="messages"></ul>
+                        <form action="/" method="POST" id="chatForm">
+                            <input id="txt" autocomplete="off" autofocus="on" placeholder="type your message here..." /><button>Send</button>
+                          </form>
+                    </div>
+                    
+                </div>
+                
+            </div>
 
+            </div>
 
+        </div>
 
     </body>
+
+    <script>
+        var socket = io.connect('http://localhost');
+        // submit text message without reload/refresh the page
+        $('form').submit(function(e){
+            e.preventDefault(); // prevents page reloading
+            socket.emit('chat_message', $('#txt').val());
+            $('#txt').val('');
+            return false;
+        });
+        // append the chat text message
+        socket.on('chat_message', function(msg){
+            $('#messages').append($('<li>').html(msg));
+        });
+        // append text if someone is online
+        socket.on('is_online', function(username) {
+            $('#messages').append($('<li>').html(username));
+        });
+        // ask username
+        var username = prompt('Please tell me your name');
+        socket.emit('username', username);
+    </script>
+
 
     </html>
