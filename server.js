@@ -26,6 +26,6 @@ io.sockets.on('connection', function(socket) {
 
 });
 
-const server = http.listen(80, function() {
+const server = http.listen(port, function() {
     console.log('listening on *:80');
 });
